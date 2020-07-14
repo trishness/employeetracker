@@ -146,25 +146,25 @@ function init() {
                         }
                     ]
                 )
-                .then(function(updateRoleAnswer){
-                    console.log(updateRoleAnswer)
-                    connection.query(
-                        "UPDATE role SET ? WHERE ?",
-                        [
-                            {
-                                title: updateRoleAnswer.updateRole
-                            },
-                            {
-                                salary: updateRoleAnswer.updateRoleSalary
+                    .then(function (updateRoleAnswer) {
+                        console.log(updateRoleAnswer)
+                        connection.query(
+                            "UPDATE role SET ? WHERE ?",
+                            [
+                                {
+                                    title: updateRoleAnswer.updateRole
+                                },
+                                {
+                                    salary: updateRoleAnswer.updateRoleSalary
+                                }
+                            ],
+                            function (err, res) {
+                                if (err) throw err;
+                                console.log(res.affectedRows + " role updated!\n");
+                                init();
                             }
-                        ],
-                        function(err,res){
-                            if (err) throw err;
-                            console.log(res.affectedRows + " role updated!\n");
-                            init();
-                        }
-                    )
-                })
+                        )
+                    })
             }
             else {
                 console.log("Selecting all departments, roles and employees...\n");
