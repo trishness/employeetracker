@@ -121,7 +121,6 @@ function init() {
                             name: "None",
                             value: 0
                         })
-
                         inquirer.prompt(
                             [
                                 {
@@ -182,7 +181,6 @@ function init() {
                             })
                     })
                 })
-
             }
             else if (response.init === "Update employee roles") {
                 inquirer.prompt(
@@ -219,26 +217,26 @@ function init() {
                         )
                     })
             }
-            else if(response.init === "View departments") {
+            else if (response.init === "View departments") {
                 connection.query("SELECT * FROM department", function (err, res) {
                     if (err) throw err;
                     console.table(res);
+                    init();
                 });
-                init();
             }
             else if (response.init === "View roles") {
                 connection.query("SELECT * FROM role", function (err, res) {
                     if (err) throw err;
                     console.table(res);
+                    init();
                 });
-                init();
             }
             else if (response.init === "View employees") {
                 connection.query("SELECT * FROM employee", function (err, res) {
                     if (err) throw err;
                     console.table(res);
+                    init();
                 });
-                init();
             }
             else {
                 connection.end();
