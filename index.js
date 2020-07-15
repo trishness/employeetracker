@@ -24,7 +24,7 @@ function init() {
         {
             type: "list",
             message: "What would you like to do?",
-            choices: ["Add a department", "Add a role", "Add an employee", "Update employee roles", "Exit"],
+            choices: ["Add a department", "Add a role", "Add an employee", "Update employee roles", "View departments", "View roles", "View employees", "Exit"],
             name: "init"
         }
     )
@@ -118,8 +118,8 @@ function init() {
                             })
                         })
                         myManager.unshift({
-                            name:"None",
-                            value:""
+                            name: "None",
+                            value: 0
                         })
 
                         inquirer.prompt(
@@ -136,35 +136,35 @@ function init() {
                                 },
                                 {
                                     type: "list",
-                                    message: "What is the role ID of this employee?", //foreign key
+                                    message: "What is the role ID of this employee?",
                                     name: "empRole",
                                     choices: myRole
                                 },
                                 {
                                     type: "list",
-                                    message: "Who is this employee's manager?", //foreign key
+                                    message: "Who is this employee's manager?",
                                     name: "empManager",
                                     choices: myManager
                                 }
                             ]
                         )
-                                .then(function (empAnswer) {
-                                    console.log(empAnswer);
-                                    if (myManager=""){
-                                        connection.query(
-                                            "INSERT INTO employee SET ?",
-                                            {
-                                                first_name: empAnswer.empFirstName,
-                                                last_name: empAnswer.empLastName,
-                                                role_id: empAnswer.empRole,
-                                                manager_id: NULL
-                                            },
-                                            function (err, res) {
-                                                if (err) throw err;
-                                                console.log(res.affectedRow + " employee added!\n")
-                                            }
-                                        )}
-                                    else{
+                            .then(function (empAnswer) {
+                                console.log(empAnswer);
+                                if (empAnswer.empManager === 0) {
+                                    connection.query(
+                                        "INSERT INTO employee SET ?",
+                                        {
+                                            first_name: empAnswer.empFirstName,
+                                            last_name: empAnswer.empLastName,
+                                            role_id: empAnswer.empRole,
+                                        },
+                                        function (err, res) {
+                                            if (err) throw err;
+                                            console.log(res.affectedRow + " employee added!\n")
+                                        }
+                                    ); init();
+                                }
+                                else {
                                     connection.query(
                                         "INSERT INTO employee SET ?",
                                         {
@@ -177,9 +177,9 @@ function init() {
                                             if (err) throw err;
                                             console.log(res.affectedRow + " employee added!\n")
                                         }
-                                    )}; init();
-                                })
-                        
+                                    ); init();
+                                }
+                            })
                     })
                 })
 
@@ -205,10 +205,10 @@ function init() {
                             "UPDATE role SET ? WHERE ?",
                             [
                                 {
-                                    title: updateRoleAnswer.updateRole
+                                    salary: updateRoleAnswer.updateRoleSalary
                                 },
                                 {
-                                    salary: updateRoleAnswer.updateRoleSalary
+                                    title: updateRoleAnswer.updateRole
                                 }
                             ],
                             function (err, res) {
@@ -219,20 +219,28 @@ function init() {
                         )
                     })
             }
-            else {
-                console.log("Selecting all departments, roles and employees...\n"); //maybe move each of these up to their respective functions so it displays after being updated
+            else if(response.init === "View departments") {
                 connection.query("SELECT * FROM department", function (err, res) {
                     if (err) throw err;
                     console.table(res);
                 });
+                init();
+            }
+            else if (response.init === "View roles") {
                 connection.query("SELECT * FROM role", function (err, res) {
                     if (err) throw err;
                     console.table(res);
                 });
-                connection.query("SELECT * FROM employee", function (err, res) { //add a view question to the initial prompt for this instead?
+                init();
+            }
+            else if (response.init === "View employees") {
+                connection.query("SELECT * FROM employee", function (err, res) {
                     if (err) throw err;
                     console.table(res);
-                })
+                });
+                init();
+            }
+            else {
                 connection.end();
             }
         })
